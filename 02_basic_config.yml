@@ -1,0 +1,64 @@
+---
+- name: Configure hostname, domain name, and enable SSH on Router 1
+  hosts: router1
+  gather_facts: no
+  vars:
+    username: "Gav"
+    password: "cisco123"
+    hostname: "R1"
+    domain_name: "example.com"
+
+  tasks:
+    - name: Set the hostname
+      ios_config:
+        lines:
+          - hostname "{{ hostname }}"
+        authorize: yes
+        auth_pass: "{{ password }}"
+        
+    - name: Set domain name
+      ios_config:
+        lines:
+          - ip domain-name "{{ domain_name }}"
+        authorize: yes
+        auth_pass: "{{ password }}"
+
+    - name: Enable SSH
+      ios_config:
+        lines:
+          - ip ssh version 2
+          - crypto key generate rsa usage-keys label ssh-key modulus 2048
+        authorize: yes
+        auth_pass: "{{ password }}"
+
+- name: Configure hostname, domain name, and enable SSH on Switch 1
+  hosts: switch1
+  gather_facts: no
+  vars:
+    username: "Gavin"
+    password: "cisco123"
+    hostname: "S1"
+    domain_name: "example.com"
+
+  tasks:
+    - name: Set the hostname
+      ios_config:
+        lines:
+          - hostname "{{ hostname }}"
+        authorize: yes
+        auth_pass: "{{ password }}"
+        
+    - name: Set domain name
+      ios_config:
+        lines:
+          - ip domain-name "{{ domain_name }}"
+        authorize: yes
+        auth_pass: "{{ password }}"
+
+    - name: Enable SSH
+      ios_config:
+        lines:
+          - ip ssh version 2
+          - crypto key generate rsa usage-keys label ssh-key modulus 2048
+        authorize: yes
+        auth_pass: "{{ password }}"

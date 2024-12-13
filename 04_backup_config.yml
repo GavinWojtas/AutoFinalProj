@@ -1,0 +1,31 @@
+- name: Back up running configuration
+  hosts: all
+  gather_facts: no
+  connection: network_cli
+  tasks:
+    - name: Enter privileged EXEC mode
+      ios_command:
+        commands:
+          - enable
+      register: enable_result
+      when: enable_password is defined  # Only attempt if enable password is defined
+
+    - name: Backup running configuration
+      ios_command:
+        commands:
+          - show running-config
+      register: running_config
+      become: true   # Use become to elevate privileges (if enable password is required)
+
+    - name: Create backup directory if it doesn't exist
+      file:
+        path: "/home/devasc/cisco-automation/backups"  # Replace with a valid directory path
+        state: directory
+        mode: '0755'
+      become: true  # Elevate privileges to create the directory
+
+    - name: Save backup to file
+      copy:
+        content: "{{ running_config.stdout[0] }}"
+        dest: "/home/devasc/cisco-automation/backups/{{ inventory_hostname }}_running_config.txt"  # Replace with a valid directory path
+      become: true  # Use become to save the backup file with elevated privileges

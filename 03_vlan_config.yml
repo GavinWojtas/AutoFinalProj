@@ -1,0 +1,32 @@
+---
+- name: VLAN Configuration on Switches
+  hosts: switches
+  gather_facts: false
+  connection: network_cli
+  become: yes  # Enable privilege escalation
+  become_method: enable  # Use the enable method (for network devices)
+  tasks:
+    # Merge VLAN configurations with existing device configuration
+    - name: Merge provided VLAN configurations
+      cisco.ios.ios_vlans:
+        config:
+          - name: vlan_10
+            vlan_id: 10
+            state: active
+            shutdown: disabled
+            remote_span: true
+          - name: vlan_20
+            vlan_id: 20
+            mtu: 610
+            state: active
+            shutdown: enabled
+          - name: vlan_30
+            vlan_id: 30
+            state: suspend
+            shutdown: enabled
+        state: merged
+      register: vlan_merge_result
+
+    - name: Show VLAN merge result
+      debug:
+        var: vlan_merge_result
