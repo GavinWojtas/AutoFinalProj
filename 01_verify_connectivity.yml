@@ -1,0 +1,24 @@
+---
+- name: Ping Network Devices via CLI
+  hosts: all
+  gather_facts: no
+  connection: network_cli
+  tasks:
+    - name: Set ansible_network_os for router
+      set_fact:
+        ansible_network_os: ios  # Set to the correct OS for the router, e.g., ios, nxos, eos
+      when: inventory_hostname == "router"  # Apply this only for the router
+    - name: Ping from network device CLI
+      ios_command:
+        commands:
+          - ping 192.168.1.10
+      register: ping_result
+    - name: Ping from network device CLI
+      ios_command:
+        commands:
+          - ping 192.168.1.1
+      register: ping_result
+
+    - name: Display ping result
+      ansible.builtin.debug:
+        var: ping_result.stdout_lines
